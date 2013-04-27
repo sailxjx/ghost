@@ -1,0 +1,15 @@
+{
+  "name": "Ghost",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "Ghost - change your click urls to union shop urls",
+  "icons": { 
+    "512": "icons/ghost512.png" 
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*"],
+      "js": ["ghost.js"]
+    }
+  ]
+}
