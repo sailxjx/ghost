@@ -1,3 +1,5 @@
+chrome = this.chrome
+
 # configs
 config = 
   env: 'dev'
@@ -9,6 +11,8 @@ domainUrlMap =
     'item.taobao.com': 712
   'jd.com':
     'item.jd.com': 544
+  '51buy.com':
+    'item.51buy.com': 573
 
 # kill me later
 goShopUrl = 'http://fun.51fanli.com/goshop/go'
@@ -39,7 +43,6 @@ bindClick = ->
 
 goPlay = ->
   domain = location.href.split('/')[2]
-  domain = 'www.taobao.com'
   for d of domainUrlMap
     for dd in d.split('|')
       if domain.indexOf(dd) >= 0
@@ -52,6 +55,11 @@ goDev = ->
     for url of domainUrlMap[domain]
       urlMap[url] = domainUrlMap[domain][url]
   return bindClick()
+
+chrome.runtime.sendMessage {
+    method: 'getActive'
+  }, (response)->
+    console.log response
 
 if config.env == 'dev'
   goDev() 
