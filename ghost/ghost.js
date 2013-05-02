@@ -48,18 +48,18 @@
   };
 
   bindClick = function() {
-    var a, aList, eventPrefix, startTime, _i, _len;
+    var a, aList, eventPrefix, _i, _len, _results;
 
-    startTime = new Date();
     aList = document.getElementsByTagName('a');
+    _results = [];
     for (_i = 0, _len = aList.length; _i < _len; _i++) {
       a = aList[_i];
       eventPrefix = typeof a.onclick === 'function' ? a.onclick : null;
-      a.addEventListener('click', function() {
+      _results.push(a.addEventListener('click', function() {
         return unionClick.call(this);
-      });
+      }));
     }
-    return console.log("time cost: " + (new Date() - startTime));
+    return _results;
   };
 
   goPlay = function() {
@@ -90,16 +90,22 @@
     return bindClick();
   };
 
-  chrome.runtime.sendMessage({
-    method: 'getActive'
-  }, function(response) {
-    if (response.data === true) {
-      if (config.env === 'dev') {
-        return goDev();
-      } else {
-        return goPlay();
+  window.addEventListener('load', function() {
+    var startTime;
+
+    startTime = new Date();
+    return chrome.runtime.sendMessage({
+      method: 'getActive'
+    }, function(response) {
+      if (response.data === true) {
+        if (config.env === 'dev') {
+          goDev();
+        } else {
+          goPlay();
+        }
+        return console.log("time cost: " + (new Date() - startTime));
       }
-    }
+    });
   });
 
 }).call(this);

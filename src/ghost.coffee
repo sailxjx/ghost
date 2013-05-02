@@ -35,13 +35,11 @@ this.unionClick = ()->
   return true
 
 bindClick = ->
-  startTime = new Date()
   aList = document.getElementsByTagName 'a'
   for a in aList
     eventPrefix = if typeof a.onclick == 'function' then a.onclick else null
     a.addEventListener 'click', ()->
       unionClick.call(this)
-  console.log "time cost: " + (new Date() - startTime)
 
 goPlay = ->
   domain = location.href.split('/')[2]
@@ -58,11 +56,14 @@ goDev = ->
       urlMap[url] = domainUrlMap[domain][url]
   return bindClick()
 
-chrome.runtime.sendMessage {
-    method: 'getActive'
-  }, (response)->
-    if response.data == true
-      if config.env == 'dev'
-        goDev() 
-      else
-        goPlay()
+window.addEventListener 'load', ()->
+  startTime = new Date()
+  chrome.runtime.sendMessage {
+      method: 'getActive'
+    }, (response)->
+      if response.data == true
+        if config.env == 'dev'
+          goDev() 
+        else
+          goPlay()
+        console.log "time cost: " + (new Date() - startTime)
