@@ -25,7 +25,7 @@
 
   urlMap = {};
 
-  this.unionClick = function(eventPrefix) {
+  this.unionClick = function() {
     var finalUrl, shopId, u, url;
 
     u = this.href;
@@ -44,9 +44,6 @@
       finalUrl = goShopUrl + '?id=' + shopId + '&go=' + encodeURIComponent(u) + '&dn=1';
     }
     this.href = finalUrl;
-    if (typeof eventPrefix === 'function') {
-      return eventPrefix.call();
-    }
     return true;
   };
 
@@ -57,10 +54,10 @@
     aList = document.getElementsByTagName('a');
     for (_i = 0, _len = aList.length; _i < _len; _i++) {
       a = aList[_i];
-      eventPrefix = typeof a.click === 'function' ? a.click : a.onclick;
-      a.onclick = function() {
-        return unionClick.call(this, eventPrefix);
-      };
+      eventPrefix = typeof a.onclick === 'function' ? a.onclick : null;
+      a.addEventListener('click', function() {
+        return unionClick.call(this);
+      });
     }
     return console.log("time cost: " + (new Date() - startTime));
   };
