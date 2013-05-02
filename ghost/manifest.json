@@ -3,8 +3,11 @@
   "version": "0.0.1",
   "manifest_version": 2,
   "description": "Ghost - change your click urls to union shop urls",
-  "icons": { 
-    "512": "icons/ghost512.png" 
+  "icons": {
+    "512": "icons/ghost512.png",
+    "256": "icons/ghost256.png",
+    "128": "icons/ghost128.png",
+    "64": "icons/ghost64.png"
   },
   "content_scripts": [
     {

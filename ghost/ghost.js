@@ -25,7 +25,7 @@
 
   urlMap = {};
 
-  this.unionClick = function() {
+  this.unionClick = function(eventPrefix) {
     var finalUrl, shopId, u, url;
 
     u = this.href;
@@ -44,17 +44,23 @@
       finalUrl = goShopUrl + '?id=' + shopId + '&go=' + encodeURIComponent(u) + '&dn=1';
     }
     this.href = finalUrl;
+    if (typeof eventPrefix === 'function') {
+      return eventPrefix.call();
+    }
     return true;
   };
 
   bindClick = function() {
-    var a, aList, startTime, _i, _len;
+    var a, aList, eventPrefix, startTime, _i, _len;
 
     startTime = new Date();
     aList = document.getElementsByTagName('a');
     for (_i = 0, _len = aList.length; _i < _len; _i++) {
       a = aList[_i];
-      a.onclick = unionClick;
+      eventPrefix = typeof a.click === 'function' ? a.click : a.onclick;
+      a.onclick = function() {
+        return unionClick.call(this, eventPrefix);
+      };
     }
     return console.log("time cost: " + (new Date() - startTime));
   };
@@ -90,13 +96,13 @@
   chrome.runtime.sendMessage({
     method: 'getActive'
   }, function(response) {
-    return console.log(response);
+    if (response.data === true) {
+      if (config.env === 'dev') {
+        return goDev();
+      } else {
+        return goPlay();
+      }
+    }
   });
-
-  if (config.env === 'dev') {
-    goDev();
-  } else {
-    goPlay();
-  }
 
 }).call(this);

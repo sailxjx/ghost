@@ -1,7 +1,16 @@
 chrome = this.chrome
-active = false
+active = true
 chrome.browserAction.onClicked.addListener (tab)->
-  active = if active == false then true else false
+  if active == false
+    active = true
+    chrome.browserAction.setIcon {
+      path: 'icons/ghost64.png'
+    }
+  else
+    active = false
+    chrome.browserAction.setIcon {
+      path: 'icons/ghost_gray64.png'
+    }
 
 requestMethods = {
   'getActive': ->

@@ -20,7 +20,7 @@ goShopUrl = 'http://fun.51fanli.com/goshop/go'
 # urlmap to replace the origin href
 urlMap = {}
 
-this.unionClick = ()->
+this.unionClick = (eventPrefix)->
   u = this.href
   return true if u.indexOf(goShopUrl) >= 0
   for url of urlMap
@@ -32,13 +32,16 @@ this.unionClick = ()->
   else
     finalUrl = goShopUrl + '?id=' + shopId + '&go=' + encodeURIComponent(u) + '&dn=1'
   this.href = finalUrl
+  return eventPrefix.call() if typeof eventPrefix == 'function'
   return true
 
 bindClick = ->
   startTime = new Date()
   aList = document.getElementsByTagName 'a'
   for a in aList
-    a.onclick = unionClick
+    eventPrefix = if typeof a.onclick == 'function' then a.onclick else null
+    a.onclick = ()->
+      unionClick.call(this, eventPrefix)
   console.log "time cost: " + (new Date() - startTime)
 
 goPlay = ->
@@ -59,9 +62,8 @@ goDev = ->
 chrome.runtime.sendMessage {
     method: 'getActive'
   }, (response)->
-    console.log response
-
-if config.env == 'dev'
-  goDev() 
-else
-  goPlay()
+    if response.data == true
+      if config.env == 'dev'
+        goDev() 
+      else
+        goPlay()

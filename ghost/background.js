@@ -4,10 +4,20 @@
 
   chrome = this.chrome;
 
-  active = false;
+  active = true;
 
   chrome.browserAction.onClicked.addListener(function(tab) {
-    return active = active === false ? true : false;
+    if (active === false) {
+      active = true;
+      return chrome.browserAction.setIcon({
+        path: 'icons/ghost64.png'
+      });
+    } else {
+      active = false;
+      return chrome.browserAction.setIcon({
+        path: 'icons/ghost_gray64.png'
+      });
+    }
   });
 
   requestMethods = {
@@ -17,7 +27,6 @@
   };
 
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    console.log(request, sender, sendResponse);
     if (typeof requestMethods[request.method] === 'function') {
       return sendResponse({
         data: requestMethods[request.method]()
