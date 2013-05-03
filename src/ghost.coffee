@@ -1,18 +1,24 @@
 chrome = this.chrome
 
-# configs
-config = 
-  env: 'dev'
-
-# supported websites and their url patterns
-domainUrlMap = 
-  'taobao.com|tmall.com':
-    'detail.tmall.com': 712
-    'item.taobao.com': 712
-  'jd.com':
-    'item.jd.com': 544
-  '51buy.com':
-    'item.51buy.com': 573
+# ghost
+ghost = 
+  configs: {}
+  ready: false  # ready for action
+  # hooks of goplay: include preHook and postHook, divided by domains
+  # supported websites and their url patterns
+  drivers:
+    'taobao.com|tmall.com':
+      'urlMap':
+        'detail.tmall.com': 712
+        'item.taobao.com': 712
+      'preHook': (callback)->  # taobao is sth strange, unionClick could not bind to every archor
+        callback()
+    'jd.com':
+      'urlMap':
+        'item.jd.com': 544
+    '51buy.com':
+      'urlMap':
+        'item.51buy.com': 573
 
 # kill me later
 goShopUrl = 'http://fun.51fanli.com/goshop/go'
@@ -37,33 +43,31 @@ this.unionClick = ()->
 bindClick = ->
   aList = document.getElementsByTagName 'a'
   for a in aList
-    eventPrefix = if typeof a.onclick == 'function' then a.onclick else null
     a.addEventListener 'click', ()->
       unionClick.call(this)
+  return true
 
 goPlay = ->
   domain = location.href.split('/')[2]
-  for d of domainUrlMap
+  for d of ghost.drivers
     for dd in d.split('|')
       if domain.indexOf(dd) >= 0
-        urlMap = domainUrlMap[d]
-        return bindClick()
+        urlMap = ghost.drivers[d]['urlMap']
+        if typeof ghost.drivers[d]['preHook'] == 'function'
+          return ghost.drivers[d]['preHook'] bindClick
+        else
+          return bindClick()
   return false
 
-goDev = ->
-  for domain of domainUrlMap
-    for url of domainUrlMap[domain]
-      urlMap[url] = domainUrlMap[domain][url]
-  return bindClick()
-
-window.addEventListener 'load', ()->
+readyForPlay = ->
+  if ghost.ready == true then return false else ghost.ready = true  # this should be called once
   startTime = new Date()
   chrome.runtime.sendMessage {
       method: 'getActive'
     }, (response)->
       if response.data == true
-        if config.env == 'dev'
-          goDev() 
-        else
-          goPlay()
+        goPlay()
         console.log "time cost: " + (new Date() - startTime)
+        return true
+
+document.addEventListener 'DOMContentLoaded', readyForPlay

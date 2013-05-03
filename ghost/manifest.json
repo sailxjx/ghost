@@ -12,7 +12,8 @@
   "content_scripts": [
     {
       "matches": ["http://*/*"],
-      "js": ["ghost.js"]
+      "js": ["ghost.js"],
+      "run_at": "document_start"
     }
   ],
   "background": {
