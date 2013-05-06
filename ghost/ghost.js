@@ -14,7 +14,7 @@
           'item.taobao.com': 712
         },
         'preHook': function(callback) {
-          return callback();
+          return setTimeout(callback, 1000);
         }
       },
       'jd.com': {

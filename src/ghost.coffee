@@ -12,7 +12,7 @@ ghost =
         'detail.tmall.com': 712
         'item.taobao.com': 712
       'preHook': (callback)->  # taobao is sth strange, unionClick could not bind to every archor
-        callback()
+        setTimeout callback, 1000
     'jd.com':
       'urlMap':
         'item.jd.com': 544
